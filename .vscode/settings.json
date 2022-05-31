@@ -1,0 +1,9 @@
+{
+    "plantuml.server": "http://localhost:8091",
+    "plantuml.render": "PlantUMLServer",
+    "plantuml.diagramsRoot": "docs/diagrams/src",
+    "plantuml.exportOutDir": "docs/diagrams/out",
+    "cSpell.words": [
+        "plantuml"
+    ],
+}

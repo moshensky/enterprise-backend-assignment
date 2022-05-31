@@ -1,0 +1,22 @@
+@startuml labeling_printer_container_diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Labeling printer container diagram
+
+System_Boundary(labelingPrinter, "Labeling printer service") {
+    ' Container_Ext(lims_spa, "SPA", "react, redux", "Internet-based system for laboratory information management")
+    Container(api, "API Application", "nodejs, typescript", "Handles all business logic")
+    ContainerDb(db, "Database", "sqlite")
+    System_Ext(printer, "Printer", "onsite")
+    Rel(api, db, "Reads/Writes")
+    Rel(api, printer, "Uses", "usb")
+}
+Person(laborant, "Lab assistant")
+System_Ext(lims, "LIMSNOW")
+
+Rel(laborant, lims, "Uses", "https")
+Rel_R(lims, api, "Uses", "http")
+
+@enduml

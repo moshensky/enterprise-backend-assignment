@@ -1,40 +1,91 @@
-# Dixa Enteprise technical assignment
+# Labeling printer
 
-First off, welcome to Dixa Enterprise's technical assignment.
-The assignment is meant to be a conversation starter for the technical interviewing phase for software engineers considered for the Dixa enterprise team.
+This service is responsible for printing custom labels from a LIMS on a specialized labeling printers.
 
-## There are two options for submitting this assignment.
+A LIMS administrator via LIMS APIs can configure LIMS with known labeling-printer service IPs.
 
-A. If you already have a portfolio project or OSS contribution activity that accurately demonstrates your technical ability for the role, you are welcome to submit that.
+## User stories
 
-B. Fork this repository and follow the instructions below...
+- As a laboratory assistant I can print various labels with one click from LIMS using onsite printer.
+- As a laboratory assistant I can observe my print job status.
+- As a laboratory assistant I can cancel my print job, if it has not been started.
+- As an administrator I can view all printing jobs.
+- As an administrator I can delete a print job from the queue or history log.
 
-### NodeJs API
+## Constraints
 
-1. Setup a node.js application to host an http server
-2. Create an API using an API first approach. The API must have basic CRUD functionality over a self chosen resource. The API should be functional and interact with a database of your own choice.
-3. Document and test your solution. Explain what it does, how to use it, and what changes or additions you would make if you had more time to work on it. 
+- State of printing jobs should be persisted on system restart.
+- Should be able to run on a Raspberry Pi 3 Model B.
+- Supported printers: brother ql-570, brother ql-710w.
+- Max 15 concurrent users per day.
+- Max 250 labels printed per day.
+- It is not expected the service to scale up in the next 1 year.
+- The service is going to be deployed on a computer to which a supported printer is going to be attached physically.
+- The service is going to be deployed in the same private network with other computers where LIMS clients are running.
+- Technology stack: node.js (lts), typescript, openapi, plantuml
+- For authorization a bearer token has to be used with according claims. LIMS is responsible for providing one.
 
-If you are having trouble coming up with an idea or scoping it, we are here to help. We don't expect that you spend more than a few hours over a period of one week to prepare your submission.
+## Architecture overview
 
-## What we are looking for in your submissions
+![System context diagram](docs/diagrams/out/system_context/system_context.png)
+![Labeling printer container diagram](docs/diagrams/out/labeling_printer_container_diagram/labeling_printer_container_diagram.png)
+![Labeling printer component diagram](docs/diagrams/out/labeling_printer_component_diagram/labeling_printer_component_diagram.png)
 
-- creativity 
-- code readability 
-- commit history 
-- documentation 
-- testability 
-- efficiency 
-- reliability 
+## API Documentation
 
-Trade-offs are expected between these categories. A very creative solution might not be super efficient or as well tested as a simpler idea. Nonetheless, be prepared to discuss these topics during our technical interview.
+[openapi definition](docs/labeling-printer.0.0.oas.yaml)
 
-## What we are NOT looking for in your submissions
-- 100% test coverage 
-- Everything to be documented 
-- Perfectly scoped commits with super detailed descriptions 
-- A full featured integration product 
+## Back of the envelope calculations
 
-Remember that we are not looking for perfect in your submissions. All we are looking for is a sample of your work that we can use to start a conversation. So, do submit your solution as soon as you feel like you have demonstrated how you would approach implementing such integration solutions. If we like what we see, you will have plenty of time to tell us how you would go about improving it during our technical interview :)
+TODO:
 
-For questions and assistance regarding submissions, reach out at mrn@dixa.com 
+- System performance characteristics?
+- Bottlenecks and resource estimations?
+
+## Development
+
+Make sure you have `nvm` installed. From the projects folder execute:
+
+```sh
+nvm use
+npm install
+```
+
+A mock server using api definition can be started via:
+
+```sh
+npm run start:mock-api
+```
+
+To run tests:
+
+```sh
+npm test
+```
+
+## TODO
+
+- [ ] Generate openapi static website
+- [ ] Monitoring
+- [ ] Metrics
+- [ ] Potential improvements (add rate limiter, x docs to print per ip/user per y secs; should it be client side or server side; separate service or app code)
+- [ ] Error cases (server failure, network loss, etc.)
+- [ ] Operation issues (CI/CD? How to monitor metrics and error logs? How to roll out the system? How to updated it?)
+- [ ] Create api design guidelines
+
+## Running mock api
+
+```sh
+# Get empty response
+curl -X 'GET' \
+  'http://localhost:4010/print-jobs' \
+  -H 'accept: application/json' \
+  -H 'Authorization: xxx' \
+  -H 'Prefer: example=empty'
+# Get many responses
+curl -X 'GET' \
+  'http://localhost:4010/print-jobs' \
+  -H 'accept: application/json' \
+  -H 'Authorization: xxx' \
+  -H 'Prefer: example=with-data'
+```

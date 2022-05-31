@@ -1,0 +1,26 @@
+@startuml labeling_printer_component_diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component diagram
+
+Person(laborant, "Lab assistant")
+System_Ext(lims, "LIMSNOW")
+ContainerDb(db, "Database", "sqlite", "Stores printing queue, print jobs history , etc.")
+System_Ext(printer, "Printer", "Prints labels onsite")
+
+Rel(laborant, lims, "Uses", "https")
+Rel_R(lims, api, "Uses", "http")
+
+
+Container_Boundary(api, "API Application") {
+    Component(printJobs, "Print jobs Controller", "express.js Controller", "Allows users to add print jobs to the printer's queue and manage them")
+    Component(worker, "Worker", "service", "Takes printing job from the queue and sends it to the printer")
+    Rel(worker, db, "Reads/Writes")
+    Rel(printJobs, db, "Reads/Writes")
+}
+
+Rel(worker, printer, "Uses", "usb")
+
+@enduml

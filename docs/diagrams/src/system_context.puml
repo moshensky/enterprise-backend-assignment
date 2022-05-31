@@ -1,0 +1,23 @@
+@startuml system_context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title System Context diagram
+
+System_Boundary(lims, "LIMSNOW") {
+    Container_Ext(lims_spa, "SPA", "typescript, react, redux", "Internet-based system for laboratory information management")
+    Container_Ext(lims_api, "Web Application", "C#, ASP.NET Core 3.1 API", "Handles all business logic")
+    ContainerDb_Ext(lims_db, "Database", "PostgreSQL")
+    Rel(lims_spa, lims_api, "Uses", "https")
+    Rel_R(lims_api, lims_db, "Reads/Writes")
+}
+Person(laborant, "Lab assistant")
+System(labelingPrinterService, "Labeling printer service", "Knows how to print lims labels using onsite printer")
+System_Ext(printer, "Printer", "onsite")
+
+Rel(laborant, lims_spa, "Uses", "https")
+Rel_R(lims_spa, labelingPrinterService, "Print lables on the onsite printer", "http")
+Rel(labelingPrinterService, printer, "Uses", "usb")
+
+@enduml
