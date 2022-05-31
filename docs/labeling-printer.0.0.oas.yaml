@@ -1,0 +1,358 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  description: |-
+    An API for printing LIMS labels using onsite labeling printer.
+
+    The LabelingPrinter API requires an API token.
+    For development and testing purposes you can use:
+    - for user: xxx
+    - for admin: yyy
+
+    You can then add the header: `Authorization: Bearer <token>` to requests.
+  version: '0.0'
+  contact:
+    name: Nikita Moshensky
+    email: nikita@moshensky.com
+  license:
+    name: Apache 2.0
+    url: https://apache.org/licenses/LICENSE-2.0
+# externalDocs:
+#   url: https://...
+#   description: Hosted docs
+servers:
+  - url: http://localhost:4010
+    description:  Prism server (uses mock data)
+security:
+  - UserToken: []
+paths:
+  /print-jobs:
+    get:
+      description: Get all queued print jobs.
+      operationId: getPrintJobs
+      tags: 
+        - PrintJobs
+      security:
+        - AdminToken: []
+      parameters:
+        - name: limit
+          in: query
+          description: The maximum number of results to return
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Number of results to skip before returning any 
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Printing jobs in the queue to be printed.
+          content: 
+            application/json:
+              schema: 
+                type: object
+                required:
+                  - jobs
+                properties:
+                  total:
+                    type: integer
+                    description: Total jobs number
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PrintJob'
+              examples:
+                with-data:
+                  summary: With data
+                  value:
+                    jobs:
+                    - label:
+                        requestNumber: RA234
+                        type: request-label
+                        requestCreatedAt: '2000-06-21T21:00:00.0Z'
+                      copies: 9
+                      createdByUserId: 3db19081-86d3-b380-0365-281d0311ad45
+                      canceledByUserId: 5666aac2-aaa4-0f27-30ce-f2db552d2fc8
+                      id: 130389a2-7448-b9fe-1fa9-1a24e2e502bb
+                      state: canceled
+                      canceledAt: '2009-07-17T21:00:00.0Z'
+                      createdAt: '2009-01-26T22:00:00.0Z'
+                    - label:
+                        executorUser: Nikita Moshensky
+                        indicatorMethod: 0015-ILM-GT:2019 
+                        requestNumber: RN111
+                        requestIndicatorId: '457'
+                        indicatorName: Aspergillus brasiliensis
+                        type: request-indicator-label
+                      copies: 4
+                      state: printing 
+                      createdByUserId: c6f2772a-74be-e21e-3b8f-f4383d46adf2
+                      createdAt: '1997-01-28T22:00:00.0Z'
+                      id: 164b92e8-24c7-61ba-076f-db056a5981fb
+                      canceledAt: '1970-05-03T22:00:00.0Z'
+                      canceledByUserId: 5dd818d9-683a-940d-ae94-2c0588ee38ee
+                    - label:
+                        requestCreatedAt: '1989-06-13T21:00:00.0Z'
+                        type: request-label
+                        requestNumber: venia
+                      copies: 4
+                      createdByUserId: 1f563402-5982-8f97-64b5-2ed8a1b3282a
+                      createdAt: '1949-10-02T22:00:00.0Z'
+                      state: completed
+                      startedAt: '1942-06-06T22:00:00.0Z'
+                      id: 207eddc4-93fe-b673-35c3-c6e6ebf68660
+                      completedAt: '1966-04-24T22:00:00.0Z'
+                    - label:
+                        requestNumber: 'est '
+                        requestCreatedAt: '1997-09-07T21:00:00.0Z'
+                        type: request-label
+                      copies: 4
+                      canceledByUserId: c1e59882-6fd3-4084-578d-4021b8ede2b2
+                      id: aadf43f8-1253-aff6-7709-fff526f5eb1e
+                      canceledAt: '1949-10-05T22:00:00.0Z'
+                      createdAt: '1984-11-28T00:00:00.0Z'
+                      state: waiting
+                      createdByUserId: 15ea879b-6c6b-ecc5-904b-8e94d75d008a
+                empty:
+                  summary: Empty
+                  value:
+                    jobs: []
+
+    post:
+      description: Create print job.
+      operationId: createPrintJob
+      tags: 
+        - PrintJobs
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPrintJob'
+      responses:
+        '201':
+          description: Waiting print job response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaitingPrintJob'
+  /print-jobs/{jobId}:
+    parameters:
+      - in: path
+        name: jobId
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The job's id
+          example: d278208f-3238-4db1-9356-d07c574bb9ce
+    get:
+      description: View job
+      operationId: viewJobWithId
+      tags: 
+        - PrintJobs
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/PrintJob'
+
+    delete:
+      description: Delete job from the queue or history without leaving any trace
+      operationId: deleteJobWithId
+      tags:
+        - PrintJobs
+      security:
+        - AdminToken: []
+      responses:
+        '204':
+          description:  No Content
+
+  /print-jobs/{jobId}/cancel:
+    parameters:
+      - in: path
+        name: jobId
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: The job's id
+          example: d278208f-3238-4db1-9356-d07c574bb9ce
+    put:
+      description: Cancel print job if the job is in `waiting` state
+      operationId: cancelJobWithId
+      tags:
+        - PrintJobs
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/PrintJob'
+#
+tags:
+  - name: PrintJobs
+    description: Print documents
+components:
+  securitySchemes:
+    UserToken:
+      description: Bearer token issued by LIMS service
+      type: apiKey
+      in: header
+      name: Authorization
+    AdminToken:
+      description: Bearer token issued by LIMS service
+      type: apiKey
+      in: header
+      name: Authorization
+
+  schemas: 
+    RequestLabel:
+      type: object
+      properties:
+        type:
+          type: string
+          pattern: '^request-label$'
+        requestNumber: 
+          type: string
+          minLength: 3
+          maxLength: 12
+        requestCreatedAt: 
+          type: string
+          format: date-time
+
+    RequestIndicatorLabel:
+      type: object
+      properties:
+        type:
+          type: string
+          pattern: '^request-indicator-label$'
+        requestIndicatorId: 
+          type: string
+        requestNumber: 
+          type: string
+          minLength: 1
+          maxLength: 10
+        executorUser: 
+          type: string
+        indicatorName: 
+          type: string
+        indicatorMethod: 
+          type: string
+
+    Label:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/RequestLabel'
+        - $ref: '#/components/schemas/RequestIndicatorLabel'
+        
+    NewPrintJob: 
+      type: object
+      required:
+        - label
+        - copies
+      properties:
+        label:
+          $ref: '#/components/schemas/Label'
+        copies:
+          description: The number of copies to print. The default is 1.
+          type: integer
+          minimum: 1
+          maximum: 10
+
+    ExistingPrintJob:
+      allOf:
+        - $ref: '#/components/schemas/NewPrintJob'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdByUserId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+
+
+    WaitingPrintJob:
+      allOf:
+        - $ref: '#/components/schemas/ExistingPrintJob'
+        - type: object
+          properties:
+            state:
+              type: string
+              pattern: '^waiting$'
+
+    StartedPrintJob:
+      allOf:
+        - $ref: '#/components/schemas/ExistingPrintJob'
+        - type: object
+          properties:
+            state:
+              type: string
+              pattern: '^printing$'
+            startedAt:
+              type: string
+              format: date-time
+
+    CompletedPrintJob:
+      allOf:
+        - $ref: '#/components/schemas/ExistingPrintJob'
+        - type: object
+          properties:
+            state:
+              type: string
+              pattern: '^completed$'
+            startedAt:
+              type: string
+              format: date-time
+            completedAt:
+              type: string
+              format: date-time
+
+    CanceledPrintJob:
+      allOf:
+        - $ref: '#/components/schemas/ExistingPrintJob'
+        - type: object
+          properties:
+            state:
+              type: string
+              pattern: '^canceled$'
+            canceledAt:
+              type: string
+              format: date-time
+            canceledByUserId:
+              type: string
+              format: uuid
+    
+    PrintJob:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/WaitingPrintJob'
+        - $ref: '#/components/schemas/StartedPrintJob'
+        - $ref: '#/components/schemas/CompletedPrintJob'
+        - $ref: '#/components/schemas/CanceledPrintJob'
+      discriminator:
+        propertyName: state
+
+    ApiError:
+      type: object
+      properties:
+        type:
+          type: string
+          description: URI indicating error type.
+        title:
+          type: string
+          description: Human-readable error title.
+        status:
+          type: integer
+          description: HTTP status code.
+        detail:
+          type: string
+          description: Human-readable error details.
+
