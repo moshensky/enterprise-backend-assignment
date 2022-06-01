@@ -12,15 +12,17 @@ jobs:
     # see https://docs.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up node using nvm
-        uses: dcodeIO/setup-node-nvm@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.15.0
+          cache: 'npm'
       - name: Print versions
         run: |
           cat /etc/os-release
           node -v
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Run tests
         run: npm run test
       - name: Run lint
