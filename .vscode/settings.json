@@ -1,9 +1,11 @@
 {
-    "plantuml.server": "http://localhost:8091",
-    "plantuml.render": "PlantUMLServer",
-    "plantuml.diagramsRoot": "docs/diagrams/src",
-    "plantuml.exportOutDir": "docs/diagrams/out",
-    "cSpell.words": [
-        "plantuml"
-    ],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "plantuml.server": "http://localhost:8091",
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.diagramsRoot": "docs/diagrams/src",
+  "plantuml.exportOutDir": "docs/diagrams/out",
+  "cSpell.words": ["plantuml"]
 }
