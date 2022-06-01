@@ -23,12 +23,14 @@ info:
 servers:
   - url: http://localhost:4010
     description: Prism server (uses mock data)
+  - url: http://localhost:5000
+    description: Development server
 security:
   - UserToken: []
 paths:
   /print-jobs:
     get:
-      description: Get all queued print jobs.
+      description: Get print jobs.
       operationId: getPrintJobs
       tags:
         - PrintJobs
@@ -228,7 +230,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PrintJob'
+                $ref: '#/components/schemas/CanceledPrintJob'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -239,6 +241,17 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServer'
+
+  /health:
+    get:
+      description: Get server health status.
+      responses:
+        '200':
+          description: Health status
+          content: 
+            text/html:
+              schema:
+                type: string
 
 tags:
   - name: PrintJobs
