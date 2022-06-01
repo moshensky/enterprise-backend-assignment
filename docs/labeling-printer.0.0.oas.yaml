@@ -118,31 +118,15 @@ paths:
                   summary: Empty
                   value:
                     jobs: []
-
         '400': 
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/BadRequest' 
         '401': 
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Unauthorized' 
         '403': 
-          description: Forbidden
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Forbidden' 
         '500': 
-          description: Internal server error
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/InternalServer' 
+
     post:
       description: Create print job.
       operationId: createPrintJob
@@ -161,29 +145,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/WaitingPrintJob'
         '400': 
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/BadRequest' 
         '401': 
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Unauthorized' 
         '403': 
-          description: Forbidden
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Forbidden' 
         '500': 
-          description: Internal server error
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/InternalServer' 
+
   /print-jobs/{jobId}:
     parameters:
       - in: path
@@ -207,35 +176,15 @@ paths:
               schema: 
                 $ref: '#/components/schemas/PrintJob'
         '400': 
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/BadRequest' 
         '401': 
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Unauthorized' 
         '403': 
-          description: Forbidden
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Forbidden' 
         '404': 
-          description: Not found or not authorized to access print job
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/NotFound' 
         '500': 
-          description: Internal server error
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/InternalServer' 
 
     delete:
       description: Delete job from the queue or history without leaving any trace
@@ -248,35 +197,15 @@ paths:
         '204':
           description:  No Content
         '400': 
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/BadRequest' 
         '401': 
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Unauthorized' 
         '403': 
-          description: Forbidden
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Forbidden' 
         '404': 
-          description: Not found or not authorized to access print job
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/NotFound' 
         '500': 
-          description: Internal server error
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/InternalServer' 
 
   /print-jobs/{jobId}/cancel:
     parameters:
@@ -301,36 +230,16 @@ paths:
               schema: 
                 $ref: '#/components/schemas/PrintJob'
         '400': 
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/BadRequest' 
         '401': 
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Unauthorized' 
         '403': 
-          description: Forbidden
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/Forbidden' 
         '404': 
-          description: Not found or not authorized to access print job
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
+          $ref: '#/components/responses/NotFound' 
         '500': 
-          description: Internal server error
-          content:
-            application/problem+json: 
-              schema:
-                $ref: '#/components/schemas/ApiError' 
-#
+          $ref: '#/components/responses/InternalServer' 
+
 tags:
   - name: PrintJobs
     description: Print documents
@@ -481,16 +390,42 @@ components:
     ApiError:
       type: object
       properties:
-        type:
+        code:
           type: string
-          description: URI indicating error type.
-        title:
+        message:
           type: string
-          description: Human-readable error title.
-        status:
-          type: integer
-          description: HTTP status code.
-        detail:
-          type: string
-          description: Human-readable error details.
+      required:
+        - code
+        - message
 
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    InternalServer:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
