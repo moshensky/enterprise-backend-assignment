@@ -1,5 +1,7 @@
 # Labeling printer
 
+![Pull Request CI/CD](https://github.com/moshensky/enterprise-backend-assignment/workflows/Pull%20Request%20CI/CD/badge.svg?branch=main)
+
 This service is responsible for printing custom labels from a LIMS on a specialized labeling printers.
 
 A LIMS administrator via LIMS APIs can configure LIMS with known labeling-printer service IPs.
