@@ -9,7 +9,7 @@
     "clean": "rm -rf ./dist ./coverage",
     "build": "npm run clean && npm run lint && npm run test && npm run tsc -- --noEmit false",
     "start": "ts-node src/index",
-    "start:mock-api": "prism mock ./labeling-printer.0.0.oas.yaml",
+    "start:mock-api": "prism mock ./docs/labeling-printer.0.0.oas.yaml",
     "start:plantuml-server": "docker run --rm --name plantuml -d -p 8091:8080 plantuml/plantuml-server:jetty",
     "stop:plantuml-server": "docker stop plantuml",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
