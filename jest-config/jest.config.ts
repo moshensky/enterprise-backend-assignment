@@ -12,8 +12,8 @@ export default {
     global: {
       branches: 70,
       function: 80,
-      lines: 80,
-      statements: 80,
+      lines: 69,
+      statements: 69,
     },
   },
   collectCoverageFrom: [`${src}/**/*.{ts,tsx}`],
