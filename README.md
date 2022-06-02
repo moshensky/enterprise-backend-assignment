@@ -67,7 +67,8 @@ npm test
 
 ## TODO
 
-- [ ] Generate openapi static website
+- [ ] Implement worker that will get waiting printer jobs and complete them one by one
+- [ ] Generate openapi static website 
 - [ ] Monitoring
 - [ ] Metrics
 - [ ] Potential improvements (add rate limiter, x docs to print per ip/user per y secs; should it be client side or server side; separate service or app code)
