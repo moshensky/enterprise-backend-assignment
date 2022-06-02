@@ -21,6 +21,7 @@ export async function getPrintJobController(
 
     if (canAccessJob(job, userId, isAdmin)) {
       response.json(job)
+    } else {
       response.status(403).json({
         code: 403,
         message: `You are not authorized to access job(${jobId})`,

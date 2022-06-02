@@ -45,7 +45,7 @@ describe('putPrintJobController', () => {
       expect(getPrintJobMock).toHaveBeenCalledWith(job.id)
     })
 
-    it('should return 403 when user has sent foreign jobId', async () => {
+    it(`should return 403 when regular user accesses someone else's job`, async () => {
       const jobId = uuid()
       const job = {
         ...createWaitingPrintJob(),

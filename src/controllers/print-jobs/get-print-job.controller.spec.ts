@@ -3,6 +3,7 @@ import { jwtToken, server } from '../../test-utils'
 import { getPrintJobController } from './get-print-job.controller'
 import { getPrintJob } from './print-jobs.dao'
 import { createWaitingPrintJob } from './print-jobs.stubs'
+import { v4 as uuid } from 'uuid'
 
 // Mock DAO module
 jest.mock('./print-jobs.dao')
@@ -38,7 +39,63 @@ describe('getPrintJobController', () => {
     expect(getPrintJobMock).toHaveBeenCalledWith(job.id)
   })
 
-  it.todo(`should get someone else's job when admin`)
-  it.todo(`should return 403 when regular user accesses someone else's job`)
-  it.todo('should return 404 for unknown job')
+  it(`should get someone else's job when admin`, async () => {
+    const job = {
+      ...createWaitingPrintJob(),
+      createdByUserId: jwtToken.regular.userId,
+    }
+    // Setup mocks
+    getPrintJobMock.mockResolvedValue(job)
+    // Send request and expect response
+    const response = await request(app)
+      .get(route.replace(':id', job.id))
+      .auth(jwtToken.admin.token, { type: 'bearer' })
+      .send()
+      .expect(200)
+    // Expect response body
+    expect(response).toHaveProperty('body')
+    expect(response.body).toEqual(job)
+    // Expect data access function to be called
+    expect(getPrintJobMock).toHaveBeenCalledWith(job.id)
+  })
+
+  it(`should return 403 when regular user accesses someone else's job`, async () => {
+    const jobId = uuid()
+    const job = {
+      ...createWaitingPrintJob(),
+      id: jobId,
+    }
+    // Setup mocks
+    getPrintJobMock.mockResolvedValue(job)
+    // Send request and expect response
+    const response = await request(app)
+      .get(route.replace(':id', jobId))
+      .auth(jwtToken.regular.token, { type: 'bearer' })
+      .send()
+      .expect(403)
+    // Expect response body
+    expect(response).toHaveProperty('body')
+    expect(response.body).toEqual({
+      code: 403,
+      message: `You are not authorized to access job(${jobId})`,
+    })
+  })
+
+  it('should return 404 for unknown job', async () => {
+    // Setup mocks
+    getPrintJobMock.mockResolvedValue(undefined)
+    const jobId = uuid()
+    // Send request and expect response
+    const response = await request(app)
+      .get(route.replace(':id', jobId))
+      .auth(jwtToken.regular.token, { type: 'bearer' })
+      .send()
+      .expect(404)
+    // Expect response body
+    expect(response).toHaveProperty('body')
+    expect(response.body).toEqual({
+      code: 404,
+      message: `Job(${jobId}) not found`,
+    })
+  })
 })
