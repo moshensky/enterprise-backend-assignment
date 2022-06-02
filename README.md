@@ -6,6 +6,8 @@ This service is responsible for printing custom labels from a LIMS on a speciali
 
 A LIMS administrator via LIMS APIs can configure LIMS with known labeling-printer service IPs.
 
+[LIMS](https://en.wikipedia.org/wiki/Laboratory_information_management_system) is a Laboratory information management system
+
 ## User stories
 
 - As a laboratory assistant I can print various labels with one click from LIMS using onsite printer.
@@ -65,7 +67,13 @@ To run tests:
 npm test
 ```
 
-## TODO
+Server starts by default on port 5000. PORT env variable can be used to override it:
+
+```sh
+PORT=7000 npm start
+```
+
+## Issues to address if it was a real project
 
 - [ ] Implement worker that will get waiting printer jobs and complete them one by one
 - [ ] Test DB queries
