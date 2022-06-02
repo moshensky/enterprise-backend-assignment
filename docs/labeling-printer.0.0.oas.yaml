@@ -6,8 +6,8 @@ info:
 
     The LabelingPrinter API requires an API token.
     For development and testing purposes you can use:
-    - for user: xxx
-    - for admin: yyy
+    - for user: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA4NGYwMC04ZmRkLTQxMGMtODAwYy1kMDZlZTMyNTg4OTQifQ.ay3PtKhDvNrTy_IQ35JQ0vcX5CWBD0GueaJ9IXluU_w`
+    - for admin: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyZTllOGM5My1hMjlmLTRmMzUtOWNkMS1kNDI0ODllMWEwMTYiLCJpc0FkbWluIjp0cnVlfQ.NzsZlvC1Lje9OWIkBhd227XOv6PZzFVaTScgDTGVa1w`
 
     You can then add the header: `Authorization: Bearer <token>` to requests.
   version: '0.0'
@@ -242,6 +242,7 @@ paths:
     get:
       security: []
       description: Get server health status.
+      operationId: getServerHealth
       responses:
         '200':
           description: Health status
@@ -256,6 +257,8 @@ paths:
                   db:
                     type: string
                     enum: [up, down]
+        '500':
+          $ref: '#/components/responses/InternalServer'
 
 tags:
   - name: PrintJobs
