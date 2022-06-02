@@ -26,7 +26,7 @@ servers:
   - url: http://localhost:5000
     description: Development server
 security:
-  - UserToken: []
+  - BearerAuth: []
 paths:
   /print-jobs:
     get:
@@ -34,8 +34,6 @@ paths:
       operationId: getPrintJobs
       tags:
         - PrintJobs
-      security:
-        - AdminToken: []
       # parameters:
       #   - name: limit
       #     in: query
@@ -193,8 +191,6 @@ paths:
       operationId: deleteJobWithId
       tags:
         - PrintJobs
-      security:
-        - AdminToken: []
       responses:
         '204':
           description: No Content
@@ -244,6 +240,7 @@ paths:
 
   /health:
     get:
+      security: []
       description: Get server health status.
       responses:
         '200':
@@ -258,16 +255,11 @@ tags:
     description: Print documents
 components:
   securitySchemes:
-    UserToken:
+    BearerAuth:
       description: Bearer token issued by LIMS service
-      type: apiKey
-      in: header
-      name: Authorization
-    AdminToken:
-      description: Bearer token issued by LIMS service
-      type: apiKey
-      in: header
-      name: Authorization
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
 
   schemas:
     RequestLabel:
@@ -410,13 +402,31 @@ components:
         - code
         - message
 
+    BadRequestError:
+      allOf:
+        - $ref: '#/components/schemas/ApiError'
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  errorCode:
+                    type: string
+                  message:
+                    type: string
+                  path:
+                    type: string
+
   responses:
+
     BadRequest:
       description: Bad request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ApiError'
+            $ref: '#/components/schemas/BadRequestError'
     Unauthorized:
       description: Unauthorized
       content:

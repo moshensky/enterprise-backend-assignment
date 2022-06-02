@@ -75,19 +75,29 @@ npm test
 - [ ] Operation issues (CI/CD? How to monitor metrics and error logs? How to roll out the system? How to updated it?)
 - [ ] Create api design guidelines
 
-## Running mock api
+## Testing api with curl
+
+Start server:
 
 ```sh
-# Get empty response
-curl -X 'GET' \
-  'http://localhost:4010/print-jobs' \
+npm start
+```
+
+Make sure to export one of the sample tokens:
+
+```sh
+# "userId": "2e9e8c93-a29f-4f35-9cd1-d42489e1a016", "isAdmin": true
+export TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyZTllOGM5My1hMjlmLTRmMzUtOWNkMS1kNDI0ODllMWEwMTYiLCJpc0FkbWluIjp0cnVlfQ.NzsZlvC1Lje9OWIkBhd227XOv6PZzFVaTScgDTGVa1w
+# "userId": "62084f00-8fdd-410c-800c-d06ee3258894"
+export TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA4NGYwMC04ZmRkLTQxMGMtODAwYy1kMDZlZTMyNTg4OTQifQ.ay3PtKhDvNrTy_IQ35JQ0vcX5CWBD0GueaJ9IXluU_w
+```
+
+Samples:
+
+```sh
+# Get empty response, make sure `isAdmin` token is defined
+curl -X 'GET' -v \
+  'http://localhost:5000/print-jobs' \
   -H 'accept: application/json' \
-  -H 'Authorization: xxx' \
-  -H 'Prefer: example=empty'
-# Get many responses
-curl -X 'GET' \
-  'http://localhost:4010/print-jobs' \
-  -H 'accept: application/json' \
-  -H 'Authorization: xxx' \
-  -H 'Prefer: example=with-data'
+  -H "Authorization: Bearer $TOKEN" 
 ```
