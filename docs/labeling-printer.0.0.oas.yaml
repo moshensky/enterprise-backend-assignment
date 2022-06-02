@@ -246,9 +246,16 @@ paths:
         '200':
           description: Health status
           content: 
-            text/html:
+            application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  apiServer:
+                    type: string
+                    enum: [up]
+                  db:
+                    type: string
+                    enum: [up, down]
 
 tags:
   - name: PrintJobs

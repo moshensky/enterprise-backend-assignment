@@ -1,5 +1,6 @@
 import { NextFunction, Request } from 'express'
 import { AuthResponse } from '../../request-handlers/authenticate'
+import { canAccessJob } from './can-access-job'
 import { getPrintJob, upsertPrintJob } from './print-jobs.dao'
 import { CanceledPrintJob } from './print-jobs.types'
 
@@ -13,16 +14,14 @@ export async function putPrintJobController(
   try {
     const job = await getPrintJob(jobId)
     if (job === undefined || job.state !== 'waiting') {
-      response
-        .status(404)
-        .set('Content-Type', 'application/json')
-        .send(
-          JSON.stringify({
-            code: 404,
-            message: `Missing 'waiting' job(${jobId})`,
-          }),
-        )
-    } else if (job.createdByUserId === userId || isAdmin) {
+      response.status(404).json({
+        code: 404,
+        message: `Missing 'waiting' job(${jobId})`,
+      })
+      return
+    }
+
+    if (canAccessJob(job, userId, isAdmin)) {
       const canceledJob: CanceledPrintJob = {
         ...job,
         state: 'canceled',
@@ -32,15 +31,10 @@ export async function putPrintJobController(
       await upsertPrintJob(canceledJob)
       response.json(canceledJob)
     } else {
-      response
-        .status(403)
-        .set('Content-Type', 'application/json')
-        .send(
-          JSON.stringify({
-            code: 403,
-            message: `You are not authorized to access job(${jobId})`,
-          }),
-        )
+      response.status(403).json({
+        code: 403,
+        message: `You are not authorized to access job(${jobId})`,
+      })
     }
   } catch (error) {
     next(error)

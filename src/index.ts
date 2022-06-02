@@ -1,5 +1,6 @@
 import { createServer } from './config/express'
 import http from 'http'
+import { db } from './db'
 
 const host = process.env.HOST || '0.0.0.0'
 const port = process.env.PORT || '5000'
@@ -20,7 +21,10 @@ const startServer = async () => {
 
     const signalTraps: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2']
     signalTraps.forEach((ev) => {
-      process.once(ev, () => server.close(() => console.log(`HTTP server closed (${ev})`)))
+      process.once(ev, () => {
+        db.destroy()
+        server.close(() => console.log(`HTTP server closed (${ev})`))
+      })
     })
   })
 }

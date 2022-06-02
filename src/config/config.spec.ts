@@ -13,6 +13,9 @@ const devConfig: Config = {
   authentication: {
     enabled: false,
   },
+  db: {
+    filename: expect.stringContaining('db.dev.db3'),
+  },
 }
 
 describe('getConfig', () => {
@@ -41,6 +44,9 @@ describe('getConfig', () => {
         logLevel: 'info',
         authentication: {
           enabled: true,
+        },
+        db: {
+          filename: expect.stringContaining('db.prod.db3'),
         },
       })
     })

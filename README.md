@@ -71,9 +71,23 @@ npm test
 - [ ] Monitoring
 - [ ] Metrics
 - [ ] Potential improvements (add rate limiter, x docs to print per ip/user per y secs; should it be client side or server side; separate service or app code)
-- [ ] Error cases (server failure, network loss, etc.)
-- [ ] Operation issues (CI/CD? How to monitor metrics and error logs? How to roll out the system? How to updated it?)
+- [ ] Operation issues (CD? How to monitor metrics and error logs? How to roll out the system? How to updated it?)
 - [ ] Create api design guidelines
+
+
+## Developing
+
+This projects uses [Knex.js](https://knexjs.org) to manage sqlite3 db.
+In package.json there are scripts that help with database management:
+
+```sh
+    "db:migrate": "npx knex --knexfile ./src/db/knexfile.ts migrate:latest",
+    "db:seed": "npx knex --knexfile ./src/db/knexfile.ts seed:run",
+    # Will reset local database to initial state
+    "db:reset": "npm run db:migrate && npm run db:seed"
+```
+
+Database files are not committed to git. Make sure to run `npm run db:reset`, if you don't have already a local database.
 
 ## Testing api with curl
 
@@ -92,12 +106,29 @@ export TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyZTllOGM5My1hMj
 export TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA4NGYwMC04ZmRkLTQxMGMtODAwYy1kMDZlZTMyNTg4OTQifQ.ay3PtKhDvNrTy_IQ35JQ0vcX5CWBD0GueaJ9IXluU_w
 ```
 
+Seeded job ids:
+
+```sh
+# created by regular user from above token
+export JOB_ID=cbf8847a-e70a-44ee-bac7-12f28430b81c
+# created by regular user 2
+export JOB_ID=ac09bffd-8fc7-4a07-91c5-4068f59d9fe7
+# created by regular user from above token
+export JOB_ID=f5dfe977-7d7a-4e85-baca-a8851e1ce798
+```
+
 Samples:
 
 ```sh
 # Get empty response, make sure `isAdmin` token is defined
 curl -X 'GET' -v \
   'http://localhost:5000/print-jobs' \
+  -H 'accept: application/json' \
+  -H "Authorization: Bearer $TOKEN" 
+
+# Delete job with id
+curl -X 'DELETE' -v \
+  "http://localhost:5000/print-jobs/$JOB_ID" \
   -H 'accept: application/json' \
   -H "Authorization: Bearer $TOKEN" 
 ```

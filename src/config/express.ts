@@ -4,6 +4,7 @@ import { printJobsRoute } from '../controllers/print-jobs/print-jobs.router'
 import { validateViaOpenapi } from '../request-handlers/openapi'
 import { sendErrorResponse } from '../request-handlers/error-handler'
 import { logRequest } from '../request-handlers/log-request'
+import { healthController } from '../controllers/health/health.controller'
 
 export const createServer = (): Application => {
   const app = express()
@@ -13,7 +14,7 @@ export const createServer = (): Application => {
   app.disable('x-powered-by')
   app.use(validateViaOpenapi)
 
-  app.get('/health', (_req, res) => res.send('UP'))
+  app.use('/health', healthController)
   app.use('/print-jobs', printJobsRoute)
 
   app.use(sendErrorResponse)

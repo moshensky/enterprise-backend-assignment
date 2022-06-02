@@ -55,3 +55,8 @@ export type CanceledPrintJob = ExistingPrintJob &
   }>
 
 export type PrintJob = WaitingPrintJob | StartedPrintJob | CompletedPrintJob | CanceledPrintJob
+
+export type PrintJobDB = {
+  id: string
+  data: string
+}

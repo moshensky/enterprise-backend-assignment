@@ -1,19 +1,21 @@
 import { v4 as uuid } from 'uuid'
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request } from 'express'
 import { upsertPrintJob } from './print-jobs.dao'
 import { WaitingPrintJob } from './print-jobs.types'
+import { AuthResponse } from '../../request-handlers/authenticate'
 
 export async function postPrintJobController(
   request: Request,
-  response: Response,
+  response: AuthResponse,
   next: NextFunction,
 ): Promise<void> {
-  const userId = 'fake user id'
+  const { userId } = response.locals.token
+  const { label, copies } = request.body
   try {
     const job: WaitingPrintJob = {
       id: uuid(),
-      label: request.body.label,
-      copies: request.body.copies,
+      label,
+      copies,
       state: 'waiting',
       createdAt: new Date().toISOString(),
       createdByUserId: userId,

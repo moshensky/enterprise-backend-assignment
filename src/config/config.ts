@@ -1,3 +1,5 @@
+import { Knex } from 'knex'
+import path from 'path'
 import { Level } from 'pino'
 
 export type Environment = 'production' | 'dev'
@@ -8,6 +10,7 @@ export type Config = Readonly<{
   authentication: {
     enabled: boolean
   }
+  db: Knex.Sqlite3ConnectionConfig
 }>
 
 export type ProcessVariables = Partial<{
@@ -22,6 +25,9 @@ function getProductionConfig(processVariables: ProcessVariables): Config {
     authentication: {
       enabled: true,
     },
+    db: {
+      filename: path.join(__dirname, '../../db.prod.db3'),
+    },
   }
 }
 
@@ -31,6 +37,9 @@ function getDevConfig(processVariables: ProcessVariables): Config {
     logLevel: processVariables.LOG_LEVEL ?? 'debug',
     authentication: {
       enabled: false,
+    },
+    db: {
+      filename: path.join(__dirname, '../../db.dev.db3'),
     },
   }
 }
