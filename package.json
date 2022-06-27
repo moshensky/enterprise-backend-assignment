@@ -1,0 +1,76 @@
+{
+  "name": "labeling-printer",
+  "description": "This service is responsible for printing custom labels from a LIMS on a specialized labeling printers. It is expected that this service is going to be deployed on a computer to which a supported printer is going to be attached physically. This computer is going to be in the same private network with other computers where LIMS clients are going to be running and interacting with it via its APIs. A LIMS administrator via LIMS APIs can configure LIMS with known labeling-printer service IPs.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc --noEmit --pretty",
+    "tsc:watch": "npm run tsc -- --watch",
+    "clean": "rm -rf ./dist ./coverage",
+    "build": "npm run clean && npm run lint && npm run test && npm run tsc -- --noEmit false",
+    "start": "ts-node src/index",
+    "start:mock-api": "prism mock ./docs/labeling-printer.0.0.oas.yaml",
+    "start:plantuml-server": "docker run --rm --name plantuml -d -p 8091:8080 plantuml/plantuml-server:jetty",
+    "start:openapi-docs": "npx @redocly/openapi-cli preview-docs ./docs/labeling-printer.0.0.oas.yaml",
+    "stop:plantuml-server": "docker stop plantuml",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:openapi": "npx @redocly/openapi-cli lint",
+    "format": "prettier --write .eslintrc.yml .prettierrc.yml .vscode/settings.json docs/labeling-printer.0.0.oas.yaml",
+    "test": "jest --config='./jest-config/jest.config.ts'",
+    "test:watch": "npm test -- --coverage=false --watch",
+    "db:migrate": "npx knex --knexfile ./src/db/knexfile.ts migrate:latest",
+    "db:seed": "npx knex --knexfile ./src/db/knexfile.ts seed:run",
+    "db:reset": "npm run db:migrate && npm run db:seed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moshensky/enterprise-backend-assignment.git"
+  },
+  "keywords": [
+    "limsnow",
+    "labeling",
+    "printers",
+    "print"
+  ],
+  "author": "Nikita Moshensky",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/moshensky/enterprise-backend-assignment/issues"
+  },
+  "homepage": "https://github.com/moshensky/enterprise-backend-assignment#readme",
+  "devDependencies": {
+    "@redocly/cli": "^1.0.0-beta.100",
+    "@redocly/openapi-cli": "^1.0.0-beta.95",
+    "@stoplight/prism-cli": "^4.9.3",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/express-pino-logger": "^4.0.3",
+    "@types/jest": "^27.5.1",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^17.0.38",
+    "@types/supertest": "^2.0.12",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^28.1.0",
+    "prettier": "2.6.2",
+    "supertest": "^6.2.3",
+    "ts-jest": "^28.0.3",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "better-sqlite3": "^7.5.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-openapi-validator": "^4.13.8",
+    "express-pino-logger": "^7.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^2.1.0",
+    "uuid": "^8.3.2"
+  }
+}

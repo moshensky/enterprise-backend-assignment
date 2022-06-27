@@ -1,0 +1,17 @@
+organization: labeling-printer
+apis:
+  core:
+    root: ./docs/labeling-printer.0.0.oas.yaml
+    lint:
+      rules:
+        operation-summary: off
+
+lint:
+  extends:
+    - recommended
+
+features.openapi:
+  schemaExpansionLevel: 2
+  generateCodeSamples:
+    languages:
+      - lang: curl
